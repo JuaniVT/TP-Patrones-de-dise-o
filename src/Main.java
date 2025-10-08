@@ -1,33 +1,35 @@
 
 public class Main {
-   /*
- * PATRÓN CHAIN OF RESPONSIBILITY: SOPORTE TÉCNICO
+    /*
+ * PATRÓN MEDIATOR: SISTEMA DE CHAT ENTRE USUARIOS
  *
  * Contexto:
- * Tenemos un sistema de soporte con distintos niveles (Nivel 1, 2, 3) y distintas solicitudes.
+ * Tenemos múltiples objetos (Usuarios) que necesitan comunicarse entre sí.
+ * Sin un mediador, cada usuario tendría que conocer a todos los demás, generando
+ * acoplamiento fuerte y dificultando el mantenimiento.
  *
  * Problema:
- * Sin patrón, el cliente debería conocer qué nivel puede manejar la solicitud, generando
- * acoplamiento y condicionales rígidos.
+ * La comunicación directa entre todos los objetos genera dependencias rígidas,
+ * difícil de mantener y extender. Si agregamos nuevos usuarios o cambiamos la lógica
+ * de comunicación, habría que modificar muchas clases.
  *
  * Solución:
- * Se crea una cadena de manejadores (SoporteNivel1 → Nivel2 → Nivel3).
- * Cada manejador decide si procesa la solicitud o la pasa al siguiente.
- * El cliente solo envía la solicitud al inicio de la cadena.*/
-
+ * Se crea un objeto central (ChatMediator) que gestiona toda la comunicación entre usuarios.
+ * Cada usuario envía mensajes al mediador, y éste decide a quién reenviarlos.
+ * Los usuarios no se comunican directamente entre sí.*/
+    
     public static void main(String[] args) {
-        Soporte nivel1 = new SoporteNivel1();
-        Soporte nivel2 = new SoporteNivel2();
-        Soporte nivel3 = new SoporteNivel3();
+        ChatMediator chat = new ChatConcreto();
 
-        // Configurar la cadena
-        nivel1.setSiguiente(nivel2);
-        nivel2.setSiguiente(nivel3);
+        Usuario u1 = new UsuarioConcreto("Alice", chat);
+        Usuario u2 = new UsuarioConcreto("Bob", chat);
+        Usuario u3 = new UsuarioConcreto("Charlie", chat);
 
-        // Enviar solicitudes
-        nivel1.manejarSolicitud("basico");
-        nivel1.manejarSolicitud("intermedio");
-        nivel1.manejarSolicitud("avanzado");
-        nivel1.manejarSolicitud("desconocido");
+        chat.agregarUsuario(u1);
+        chat.agregarUsuario(u2);
+        chat.agregarUsuario(u3);
+
+        u1.enviar("Hola a todos!");
+        u2.enviar("Hola Alice!");
     }
 }
