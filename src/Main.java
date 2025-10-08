@@ -1,33 +1,33 @@
 
 public class Main {
-    /*
- * EJEMPLO DEL PATRÓN PROXY: VISUALIZADOR DE IMÁGENES
+   /*
+ * PATRÓN CHAIN OF RESPONSIBILITY: SOPORTE TÉCNICO
  *
  * Contexto:
- * Tenemos imágenes que son costosas de cargar desde disco, como fotos grandes o gráficos
- * que requieren muchos recursos. Queremos mostrarlas a los usuarios sin cargar todo
- * inmediatamente ni gastar memoria innecesaria.
+ * Tenemos un sistema de soporte con distintos niveles (Nivel 1, 2, 3) y distintas solicitudes.
  *
  * Problema:
- * Si cada vez que el usuario quiere ver una imagen creamos un nuevo objeto, se gastan
- * muchos recursos y se pierde eficiencia. Además, puede que queramos controlar el acceso
- * a ciertas imágenes (ej: permisos, logging, cache).
+ * Sin patrón, el cliente debería conocer qué nivel puede manejar la solicitud, generando
+ * acoplamiento y condicionales rígidos.
  *
- * Solución con Proxy:
- * - Creamos un objeto intermediario (ProxyImagen) que implementa la misma interfaz que
- *   la imagen real (Imagen).
- * - El proxy controla el acceso a la imagen real: solo la crea cuando realmente se necesita
- *   (Lazy Initialization).
- * - El proxy también permite agregar funcionalidades extras antes o después de usar
- *   la imagen real, como logging, cache o control de permisos.*
+ * Solución:
+ * Se crea una cadena de manejadores (SoporteNivel1 → Nivel2 → Nivel3).
+ * Cada manejador decide si procesa la solicitud o la pasa al siguiente.
+ * El cliente solo envía la solicitud al inicio de la cadena.*/
 
     public static void main(String[] args) {
-        Imagen imagen1 = new ProxyImagen("foto1.jpg");
-        Imagen imagen2 = new ProxyImagen("foto2.jpg");
+        Soporte nivel1 = new SoporteNivel1();
+        Soporte nivel2 = new SoporteNivel2();
+        Soporte nivel3 = new SoporteNivel3();
 
-        // La imagen se carga desde disco solo la primera vez que se necesita
-        imagen1.mostrar();
-        imagen1.mostrar(); // Ya no se carga desde disco, solo se muestra
-        imagen2.mostrar();
+        // Configurar la cadena
+        nivel1.setSiguiente(nivel2);
+        nivel2.setSiguiente(nivel3);
+
+        // Enviar solicitudes
+        nivel1.manejarSolicitud("basico");
+        nivel1.manejarSolicitud("intermedio");
+        nivel1.manejarSolicitud("avanzado");
+        nivel1.manejarSolicitud("desconocido");
     }
 }
